@@ -15,6 +15,7 @@ class CepField(forms.RegexField):
     def clean(self, value):
         original_value = value
         value = super(CepField, self).clean(value)
+        value = value.replace('-', '').replace('.', '')
         cep = Cep.objects.get_or_create(codigo=value)
         if cep.valido:
             return original_value

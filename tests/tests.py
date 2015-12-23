@@ -84,3 +84,10 @@ class CepFormTestCase(TestCase):
         field = CepField()
         field.clean('70.150-903')
         self.assertEqual('70.150-903', field.clean('70.150-903'))
+
+    def test_cepfield_saves_model_without_ponctuation(self):
+        field = CepField()
+        field.clean('70.150-903')
+        cep = Cep.objects.first()
+        self.assertEqual('70150903', cep.codigo)
+
