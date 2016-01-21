@@ -8,6 +8,8 @@ from .models import Cep
 
 
 class CepField(forms.RegexField):
+    WEB_SERVICE_URL = 'http://m.correios.com.br/movel/buscaCepConfirma.do'
+
     def __init__(self, raise_exception=True, *args, **kwargs):
         super(CepField, self).__init__(r'^\d{2}\.?\d{3}-?\d{3}', strip=True, *args, **kwargs)
         self.raise_exception = raise_exception
@@ -30,7 +32,7 @@ class CepField(forms.RegexField):
     def valida_correios(self, codigo):
         try:
             result = requests.post(
-                'http://m.correios.com.br/movel/buscaCepConfirma.do',
+                self.WEB_SERVICE_URL,
                 {'metodo': 'buscarCep', 'cepEntrada': codigo})
         except:
             if self.raise_exception:
