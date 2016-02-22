@@ -5,12 +5,26 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from .models import Cep
+from .parser import Parser
 
 
 class CepField(forms.RegexField):
-    def __init__(self, raise_exception=True, *args, **kwargs):
-        super(CepField, self).__init__(r'^\d{2}\.?\d{3}-?\d{3}', strip=True, *args, **kwargs)
-        self.raise_exception = raise_exception
+    SERVICE_URL = 'http://m.correios.com.br/movel/buscaCepConfirma.do'
+
+    def __init__(self, should_raise_exception=True, *args, **kwargs):
+        super(CepField, self).__init__(r'^\d{2}\.?\d{3}-?\d{3}',
+                                       strip=True,
+                                       *args,
+                                       **kwargs)
+        self.should_raise_exception = should_raise_exception
+        self.dados = {
+            'bairro': None,
+            'logradouro': None,
+            'estado': None,
+            'cidade': None,
+            'cliente': None,
+        }
+        self.valido = False
 
     def clean(self, value):
         original_value = value
@@ -22,21 +36,29 @@ class CepField(forms.RegexField):
         if not self.valida_correios(value):
             raise ValidationError(u'Invalid CEP')
 
-        cep.valido = True
+        cep.valido = self.valido
+        if cep.valido:
+            cep.logradouro = self.dados.get('logradouro', self.dados.get('cliente', ''))
+            cep.bairro = self.dados.get('bairro', '')
+            cep.estado = self.dados.get('estado', '')
+            cep.cidade = self.dados.get('cidade', '')
+            cep.complemento = self.dados.get('complemento', '')
         cep.save()
         return original_value
 
     def valida_correios(self, codigo):
         try:
-            result = requests.post(
-                'http://m.correios.com.br/movel/buscaCepConfirma.do',
+            response = requests.post(
+                self.SERVICE_URL,
                 {'metodo': 'buscarCep', 'cepEntrada': codigo})
-        except:
-            if self.raise_exception:
+            parse = Parser(response.content)
+            self.dados = parse.get_data()
+        except requests.RequestException:
+            if self.should_raise_exception:
                 raise ValidationError('Cannot validade with Correios')
             return True
 
-        if 'Dados nao encontrados' in result.content:
+        if 'Dados nao encontrados' in response.content:
             return False
         self.valido = True
         return True

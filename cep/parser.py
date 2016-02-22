@@ -4,7 +4,7 @@ import re
 
 class Parser(object):
     def __init__(self, content):
-        self.content = content
+        self.content = content.decode('ISO-8859-1')
         self.labels = None
         self.contents = None
 
@@ -22,11 +22,9 @@ class Parser(object):
                 data['estado'] = estado.strip()
                 data['cidade'] = cidade.strip()
             elif 'logradouro' in label and ' - ' in value:
-                logradouro, complemento = value.split(' - ')
+                logradouro, complemento = value.split(' - ', 1)
                 data['logradouro'] = logradouro.strip()
                 data['complemento'] = complemento.strip()
-            elif value == u'endereço':
-                data['endereco'] = data[label] = value.strip()
             else:
                 data[label] = value.strip()
 

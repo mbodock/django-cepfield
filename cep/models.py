@@ -15,5 +15,10 @@ class CepManager(models.Manager):
 class Cep(models.Model):
     codigo = models.CharField(max_length=8, unique=True)
     valido = models.BooleanField(default=False)
+    cidade = models.CharField(max_length=255)
+    estado = models.CharField(max_length=2)
+    logradouro = models.CharField(max_length=255)
+    bairro = models.CharField(max_length=255)
+    complemento = models.CharField(max_length=255)
 
     objects = CepManager()
