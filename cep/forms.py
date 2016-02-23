@@ -30,6 +30,7 @@ class CepField(forms.RegexField):
         value = super(CepField, self).clean(value)
         value = value.strip('.: ')
         cep = Cep.objects.get_or_create(codigo=value)
+        cep.original_value = original_value
         if cep.valido:
             return cep
 

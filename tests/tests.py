@@ -77,12 +77,12 @@ class CepFormTestCase(TestCase):
     @mock.patch('requests.post', mock.Mock(side_effect=fake_request_success_brasilia))
     def test_correctly_cep(self):
         field = CepField()
-        self.assertEqual('70.150-903', field.clean('70.150-903'))
+        self.assertEqual('70.150-903', field.clean('70.150-903').original_value)
 
     @mock.patch('requests.post', mock.Mock(side_effect=fake_request_error))
     def test_validate_without_internet_silent(self):
         field = CepField(should_raise_exception=False)
-        self.assertEqual('70.150-903', field.clean('70.150-903'))
+        self.assertEqual('70.150-903', field.clean('70.150-903').original_value)
 
     @mock.patch('requests.post', mock.Mock(side_effect=fake_request_error))
     def test_validate_without_internet_raises_exception(self):
@@ -95,36 +95,32 @@ class CepFormTestCase(TestCase):
     def test_revalidate_saved_cep(self):
         field = CepField()
         field.clean('70.150-903')
-        self.assertEqual('70.150-903', field.clean('70.150-903'))
+        self.assertEqual('70.150-903', field.clean('70.150-903').original_value)
 
     @mock.patch('requests.post', mock.Mock(side_effect=fake_request_success_brasilia))
     def test_validate_fulfill_module(self):
         field = CepField()
-        field.clean('70.150-903')
-        cep = Cep.objects.first()
+        cep = field.clean('70.150-903')
         self.assertEqual(u'Zona Cívico-Administrativa', cep.bairro)
 
     @mock.patch('requests.post', mock.Mock(side_effect=fake_request_success_brasilia))
     def test_validate_fulfill_module_logradouro_with_client(self):
         field = CepField()
-        field.clean('70.150-903')
-        cep = Cep.objects.first()
+        cep = field.clean('70.150-903')
         self.assertEqual(u'Palácio da Alvorada (Residência Oficial do Presidente da República)',
                          cep.logradouro)
 
     @mock.patch('requests.post', mock.Mock(side_effect=fake_request_success_logradouro))
     def test_validate_fulfill_module_logradouro_without_client(self):
         field = CepField()
-        field.clean('70.150-903')
-        cep = Cep.objects.first()
+        cep = field.clean('70.150-903')
         self.assertEqual(u'Rua Doutor Raul Silva',
                          cep.logradouro)
 
     @mock.patch('requests.post', mock.Mock(side_effect=fake_request_success_logradouro))
     def test_validate_fulfill_module_logradouro_with_complemento(self):
         field = CepField()
-        field.clean('70.150-903')
-        cep = Cep.objects.first()
+        cep = field.clean('70.150-903')
         self.assertEqual(u'de 2301/2302 ao fim',
                          cep.complemento)
 
