@@ -2,12 +2,19 @@
 
 Valida e preenche automaticamente endereço baseado em um numero de CEP.
 
+## Build Status
+
+[![Build Status](https://travis-ci.org/mbodock/django-cepfield.svg?branch=master)](https://travis-ci.org/mbodock/django-cepfield/)
+[![Coverage Status](https://coveralls.io/repos/github/mbodock/django-cepfield/badge.svg?branch=master)](https://coveralls.io/github/mbodock/django-cepfield?branch=master)
+
+
 ## Instalação
 
 ### Requisitos
 
 * Django 1.7+
 * Requests 2.9+
+
 
 ### Instalando
 
@@ -24,6 +31,7 @@ pip install django-cepfield
 ```shell
 ./manage syncdb
 ```
+
 
 ## Uso
 
