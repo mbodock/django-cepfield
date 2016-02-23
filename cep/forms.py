@@ -1,4 +1,5 @@
 # encoding: utf-8
+from __future__ import unicode_literals
 import requests
 
 from django import forms
@@ -35,7 +36,7 @@ class CepField(forms.RegexField):
             return cep
 
         if not self.valida_correios(value):
-            raise ValidationError(u'Invalid CEP')
+            raise ValidationError('Invalid CEP')
 
         cep.valido = self.valido
         if cep.valido:
@@ -52,14 +53,14 @@ class CepField(forms.RegexField):
             response = requests.post(
                 self.SERVICE_URL,
                 {'metodo': 'buscarCep', 'cepEntrada': codigo})
-            parse = Parser(response.content)
-            self.dados = parse.get_data()
+            parser = Parser(response.content)
+            self.dados = parser.get_data()
         except requests.RequestException:
             if self.should_raise_exception:
                 raise ValidationError('Cannot validade with Correios')
             return True
 
-        if 'Dados nao encontrados' in response.content:
+        if 'Dados nao encontrados' in parser.content:
             return False
         self.valido = True
         return True

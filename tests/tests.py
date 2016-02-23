@@ -1,4 +1,7 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
+import codecs
 import os
 import mock
 import sys
@@ -30,17 +33,17 @@ class FakeException(requests.RequestException):
 
 
 def fake_request_success_brasilia(*args, **kwargs):
-    with open('tests/responses/success.html', 'r') as f:
+    with codecs.open('tests/responses/success.html', 'r', 'iso-8859-1') as f:
         return FakeRequest(f.read())
 
 
 def fake_request_success_logradouro(*args, **kwargs):
-    with open('tests/responses/success-logradouro.html', 'r') as f:
+    with codecs.open('tests/responses/success-logradouro.html', 'r', 'iso-8859-1') as f:
         return FakeRequest(f.read())
 
 
 def fake_request_fail(*args, **kwargs):
-    with open('tests/responses/error.html', 'r') as f:
+    with codecs.open('tests/responses/error.html', 'r', 'iso-8859-1') as f:
         return FakeRequest(f.read())
 
 
@@ -101,27 +104,27 @@ class CepFormTestCase(TestCase):
     def test_validate_fulfill_module(self):
         field = CepField()
         cep = field.clean('70.150-903')
-        self.assertEqual(u'Zona Cívico-Administrativa', cep.bairro)
+        self.assertEqual('Zona Cívico-Administrativa', cep.bairro)
 
     @mock.patch('requests.post', mock.Mock(side_effect=fake_request_success_brasilia))
     def test_validate_fulfill_module_logradouro_with_client(self):
         field = CepField()
         cep = field.clean('70.150-903')
-        self.assertEqual(u'Palácio da Alvorada (Residência Oficial do Presidente da República)',
+        self.assertEqual('Palácio da Alvorada (Residência Oficial do Presidente da República)',
                          cep.logradouro)
 
     @mock.patch('requests.post', mock.Mock(side_effect=fake_request_success_logradouro))
     def test_validate_fulfill_module_logradouro_without_client(self):
         field = CepField()
         cep = field.clean('70.150-903')
-        self.assertEqual(u'Rua Doutor Raul Silva',
+        self.assertEqual('Rua Doutor Raul Silva',
                          cep.logradouro)
 
     @mock.patch('requests.post', mock.Mock(side_effect=fake_request_success_logradouro))
     def test_validate_fulfill_module_logradouro_with_complemento(self):
         field = CepField()
         cep = field.clean('70.150-903')
-        self.assertEqual(u'de 2301/2302 ao fim',
+        self.assertEqual('de 2301/2302 ao fim',
                          cep.complemento)
 
 
@@ -130,7 +133,7 @@ class ParserTestCase(TestCase):
         self.data = {
             'logradouro': 'Rua Doutor Raul Silva',
             'bairro': 'Jardim Francisco Fernandes',
-            'cidade': u'São José do Rio Preto',
+            'cidade': 'São José do Rio Preto',
             'estado': 'SP',
             'complemento': 'de 2301/2302 ao fim',
         }
@@ -152,8 +155,8 @@ class ParserTestCase(TestCase):
     def test_parser_gets_bairro_com_acento(self):
         data = {
             'logradouro': 'SPP',
-            'bairro': u'Zona Cívico-Administrativa',
-            'cidade': u'Brasília',
+            'bairro': 'Zona Cívico-Administrativa',
+            'cidade': 'Brasília',
             'estado': 'DF',
         }
         response = fake_request_success_brasilia()
