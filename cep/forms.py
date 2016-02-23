@@ -13,7 +13,6 @@ class CepField(forms.RegexField):
 
     def __init__(self, should_raise_exception=True, *args, **kwargs):
         super(CepField, self).__init__(r'^\d{2}\.?\d{3}-?\d{3}',
-                                       strip=True,
                                        *args,
                                        **kwargs)
         self.should_raise_exception = should_raise_exception
@@ -29,9 +28,10 @@ class CepField(forms.RegexField):
     def clean(self, value):
         original_value = value
         value = super(CepField, self).clean(value)
+        value = value.strip('.: ')
         cep = Cep.objects.get_or_create(codigo=value)
         if cep.valido:
-            return original_value
+            return cep
 
         if not self.valida_correios(value):
             raise ValidationError(u'Invalid CEP')
@@ -44,7 +44,7 @@ class CepField(forms.RegexField):
             cep.cidade = self.dados.get('cidade', '')
             cep.complemento = self.dados.get('complemento', '')
         cep.save()
-        return original_value
+        return cep
 
     def valida_correios(self, codigo):
         try:
