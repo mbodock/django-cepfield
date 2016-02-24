@@ -66,6 +66,11 @@ class CepModelTestCase(TestCase):
         novo_cep.save()
         self.assertEqual(2, novo_cep.id)
 
+    def test_cep_str(self):
+        cep = Cep(codigo='11111111')
+        cep.save()
+        self.assertEqual('11.111-111', str(cep))
+
 
 class CepFormTestCase(TestCase):
     def test_invalid_cep_format(self):

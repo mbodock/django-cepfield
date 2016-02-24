@@ -22,3 +22,9 @@ class Cep(models.Model):
     complemento = models.CharField(max_length=255)
 
     objects = CepManager()
+
+    def __str__(self):
+        return '{0}.{1}-{2}'.format(
+            self.codigo[0:2],
+            self.codigo[2:5],
+            self.codigo[5:8])
