@@ -4,7 +4,7 @@ import re
 
 class Parser(object):
     def __init__(self, content):
-        self.content = content
+        self.content = content.decode('iso-8859-1')
         self.labels = None
         self.contents = None
 

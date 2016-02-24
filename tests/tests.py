@@ -34,19 +34,19 @@ class FakeException(requests.RequestException):
 
 def fake_request_success_brasilia(*args, **kwargs):
     with codecs.open('tests/responses/success.html', 'r', 'iso-8859-1') as f:
-        return FakeRequest(f.read())
+        return FakeRequest(f.read().encode('iso-8859-1'))
 
 
 def fake_request_success_logradouro(*args, **kwargs):
     with codecs.open('tests/responses/success-logradouro.html',
                      'r',
                      'iso-8859-1') as f:
-        return FakeRequest(f.read())
+        return FakeRequest(f.read().encode('iso-8859-1'))
 
 
 def fake_request_fail(*args, **kwargs):
     with codecs.open('tests/responses/error.html', 'r', 'iso-8859-1') as f:
-        return FakeRequest(f.read())
+        return FakeRequest(f.read().encode('iso-8859-1'))
 
 
 def fake_request_error(*args, **kwargs):
