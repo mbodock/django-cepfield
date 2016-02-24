@@ -12,11 +12,11 @@ from .parser import Parser
 class CepField(forms.RegexField):
     SERVICE_URL = 'http://m.correios.com.br/movel/buscaCepConfirma.do'
 
-    def __init__(self, should_raise_exception=True, *args, **kwargs):
+    def __init__(self, force_correios_validation=True, *args, **kwargs):
         super(CepField, self).__init__(r'^\d{2}\.?\d{3}-?\d{3}',
                                        *args,
                                        **kwargs)
-        self.should_raise_exception = should_raise_exception
+        self.force_correios_validation = force_correios_validation
         self.dados = {
             'bairro': None,
             'logradouro': None,
@@ -40,7 +40,8 @@ class CepField(forms.RegexField):
 
         cep.valido = self.valido
         if cep.valido:
-            cep.logradouro = self.dados.get('logradouro', self.dados.get('cliente', ''))
+            cep.logradouro = self.dados.get('logradouro',
+                                            self.dados.get('cliente', ''))
             cep.bairro = self.dados.get('bairro', '')
             cep.estado = self.dados.get('estado', '')
             cep.cidade = self.dados.get('cidade', '')
@@ -56,7 +57,7 @@ class CepField(forms.RegexField):
             parser = Parser(response.content)
             self.dados = parser.get_data()
         except requests.RequestException:
-            if self.should_raise_exception:
+            if self.force_correios_validation:
                 raise ValidationError('Cannot validade with Correios')
             return True
 
