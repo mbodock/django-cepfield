@@ -45,6 +45,9 @@ from cep.forms import CepField
 
 class MeuForm(forms.Form):
     cep = CepField()
+    # CepFIeld(force_correios_validation=False) will not raises a validation error if requests can't reach Correios.
+    # CepFIeld(timeout=3) requests will wait only 3 seconds before fails, default is 10.
+    # you can combine both
 
 # sua view
 form = MeuForm(request.GET)
