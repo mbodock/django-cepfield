@@ -12,7 +12,7 @@ from .parser import Parser
 class CepField(forms.RegexField):
     SERVICE_URL = 'http://m.correios.com.br/movel/buscaCepConfirma.do'
 
-    def __init__(self, force_correios_validation=True, *args, **kwargs):
+    def __init__(self, force_correios_validation=True, timeout=10, *args, **kwargs):
         super(CepField, self).__init__(r'^\d{2}\.?\d{3}-?\d{3}',
                                        *args,
                                        **kwargs)
@@ -25,6 +25,7 @@ class CepField(forms.RegexField):
             'cliente': None,
         }
         self.valido = False
+        self.timeout = timeout
 
     def clean(self, value):
         original_value = value
@@ -53,7 +54,8 @@ class CepField(forms.RegexField):
         try:
             response = requests.post(
                 self.SERVICE_URL,
-                {'metodo': 'buscarCep', 'cepEntrada': codigo})
+                {'metodo': 'buscarCep', 'cepEntrada': codigo},
+                timeout=self.timeout)
             parser = Parser(response.content)
             self.dados = parser.get_data()
         except requests.RequestException:

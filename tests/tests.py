@@ -72,6 +72,7 @@ class CepModelTestCase(TestCase):
         self.assertEqual('11.111-111', str(cep))
 
 
+
 class CepFormTestCase(TestCase):
     def test_invalid_cep_format(self):
         field = CepField()
@@ -143,6 +144,16 @@ class CepFormTestCase(TestCase):
         cep = field.clean('70.150-903')
         self.assertEqual('de 2301/2302 ao fim',
                          cep.complemento)
+
+    def test_request_timeout(self):
+        cep = CepField(timeout=0.0001)
+        with self.assertRaises(ValidationError):
+            cep.clean('70.150-903')
+
+    def test_request_timeout_without_raise_error(self):
+        cepfield = CepField(force_correios_validation=False, timeout=0.0001)
+        cep = cepfield.clean('70.150-903')
+        self.assertFalse(cep.valido)
 
 
 class ParserTestCase(TestCase):
