@@ -29,7 +29,7 @@ pip install django-cepfield
 * Crie as tabelas necessárias:
 
 ```shell
-./manage syncdb
+./manage migrate
 ```
 
 
