@@ -13,7 +13,7 @@ class CepField(forms.RegexField):
     SERVICE_URL = 'http://m.correios.com.br/movel/buscaCepConfirma.do'
 
     def __init__(self, force_correios_validation=True, timeout=10, *args, **kwargs):
-        super(CepField, self).__init__(r'^\d{2}\.?\d{3}-?\d{3}',
+        super(CepField, self).__init__(r'^\d{2}\.?\d{3}-?\d{3}$',
                                        *args,
                                        **kwargs)
         self.force_correios_validation = force_correios_validation

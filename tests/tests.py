@@ -72,12 +72,16 @@ class CepModelTestCase(TestCase):
         self.assertEqual('11.111-111', str(cep))
 
 
-
 class CepFormTestCase(TestCase):
     def test_invalid_cep_format(self):
         field = CepField()
         with self.assertRaises(ValidationError):
             field.clean('701150-903')
+
+    def test_invalid_cep_with_only_ones(self):
+        field = CepField()
+        with self.assertRaises(ValidationError):
+            field.clean('111111111')
 
     @mock.patch('requests.post', mock.Mock(side_effect=fake_request_fail))
     def test_validate_with_correios_invalid_cep(self):
