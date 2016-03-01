@@ -96,6 +96,13 @@ class CepFormTestCase(TestCase):
         self.assertEqual('70.150-903',
                          field.clean('70.150-903').original_value)
 
+    @mock.patch('requests.post',
+                mock.Mock(side_effect=fake_request_success_brasilia))
+    def test_correctly_cep_with_only_dash(self):
+        field = CepField()
+        self.assertEqual('70150903',
+                         field.clean('70150-903').codigo)
+
     @mock.patch('requests.post', mock.Mock(side_effect=fake_request_error))
     def test_validate_without_internet_silent(self):
         field = CepField(force_correios_validation=False)
