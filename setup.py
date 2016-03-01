@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-__version__ = '0.1.4'
+__version__ = '0.1.5'
 __description__ = 'Django CepField'
 __long_description__ = 'Auto fill address using brasizilian CEP number.'
 
