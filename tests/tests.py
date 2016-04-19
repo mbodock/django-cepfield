@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.join(test_dir, os.path.pardir))
 os.environ["DJANGO_SETTINGS_MODULE"] = 'tests.settings'
 
 import django
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.core.management import call_command
 from django.core.exceptions import ValidationError
 django.setup()
@@ -88,6 +88,15 @@ class CepFormTestCase(TestCase):
         field = CepField()
         with self.assertRaises(ValidationError):
             field.clean('71150-903')
+
+    @override_settings(LANGUAGE_CODE='pt-br')
+    @mock.patch('requests.post', mock.Mock(side_effect=fake_request_fail))
+    def test_validate_msg_translates_to_pt_br(self):
+        field = CepField()
+        try:
+            field.clean('71150-903')
+        except ValidationError as error:
+            self.assertEqual('CEP inválido', error.message)
 
     @mock.patch('requests.post',
                 mock.Mock(side_effect=fake_request_success_brasilia))

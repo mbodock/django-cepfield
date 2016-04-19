@@ -4,6 +4,7 @@ import requests
 
 from django import forms
 from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext_lazy as _
 
 from .models import Cep
 from .parser import Parser
@@ -11,8 +12,11 @@ from .parser import Parser
 
 class CepField(forms.RegexField):
     SERVICE_URL = 'http://m.correios.com.br/movel/buscaCepConfirma.do'
+    invalid_cep = _('Invalid CEP')
+    cannot_validate = _('Cannot validate with Correios')
 
-    def __init__(self, force_correios_validation=True, timeout=10, *args, **kwargs):
+    def __init__(self, force_correios_validation=True,
+                 timeout=10, *args, **kwargs):
         super(CepField, self).__init__(r'^\d{2}\.?\d{3}-?\d{3}$',
                                        *args,
                                        **kwargs)
@@ -37,7 +41,7 @@ class CepField(forms.RegexField):
             return cep
 
         if not self.valida_correios(value):
-            raise ValidationError('Invalid CEP')
+            raise ValidationError(self.invalid_cep)
 
         cep.valido = self.valido
         if cep.valido:
@@ -60,7 +64,7 @@ class CepField(forms.RegexField):
             self.dados = parser.get_data()
         except requests.RequestException:
             if self.force_correios_validation:
-                raise ValidationError('Cannot validade with Correios')
+                raise ValidationError(self.cannot_validate)
             return True
 
         if 'Dados nao encontrados' in parser.content:
