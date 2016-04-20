@@ -90,6 +90,7 @@ class CepFormTestCase(TestCase):
             field.clean('71150-903')
 
     @override_settings(LANGUAGE_CODE='pt-br')
+    @override_settings(USE_I18N=True)
     @mock.patch('requests.post', mock.Mock(side_effect=fake_request_fail))
     def test_validate_msg_translates_to_pt_br(self):
         field = CepField()
