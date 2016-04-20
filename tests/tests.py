@@ -96,7 +96,7 @@ class CepFormTestCase(TestCase):
         try:
             field.clean('71150-903')
         except ValidationError as error:
-            self.assertEqual('CEP inválido', error.message)
+            self.assertEqual('CEP inválido', error.message + '')
 
     @mock.patch('requests.post',
                 mock.Mock(side_effect=fake_request_success_brasilia))
