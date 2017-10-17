@@ -11,7 +11,8 @@ from .parser import Parser
 
 
 class CepField(forms.RegexField):
-    SERVICE_URL = 'http://m.correios.com.br/movel/buscaCepConfirma.do'
+    SERVICE_URL = ('http://www.buscacep.correios.com.br/sistemas/'
+                   'buscacep/resultadoBuscaCepEndereco.cfm')
     invalid_cep = _('Invalid CEP')
     cannot_validate = _('Cannot validate with Correios')
 
@@ -40,8 +41,7 @@ class CepField(forms.RegexField):
         if cep.valido:
             return cep
 
-        if not self.valida_correios(value):
-            raise ValidationError(self.invalid_cep)
+        self.valida_correios(value)
 
         cep.valido = self.valido
         if cep.valido:
@@ -58,16 +58,13 @@ class CepField(forms.RegexField):
         try:
             response = requests.post(
                 self.SERVICE_URL,
-                {'metodo': 'buscarCep', 'cepEntrada': codigo},
+                data={'relaxation': codigo},
                 timeout=self.timeout)
             parser = Parser(response.content)
             self.dados = parser.get_data()
         except requests.RequestException:
             if self.force_correios_validation:
                 raise ValidationError(self.cannot_validate)
-            return True
+            return
 
-        if 'Dados nao encontrados' in parser.content:
-            return False
         self.valido = True
-        return True
