@@ -20,7 +20,7 @@ call_command('migrate', '--run-syncdb')
 
 from cep.models import Cep
 from cep.forms import CepField
-from cep.parser import Parser
+from cep.parser import Engine, Parser, ParserEngine
 
 
 class FakeRequest(object):
@@ -136,25 +136,9 @@ class CepFormTestCase(TestCase):
     def test_validate_fulfill_module_logradouro_with_client(self):
         field = CepField()
         cep = field.clean('70.150-903')
-        self.assertEqual('Palácio da Alvorada (Residência'
+        self.assertEqual('SPP  Palácio da Alvorada (Residência'
                          ' Oficial do Presidente da República)',
                          cep.logradouro)
-
-    @mock.patch('requests.post',
-                mock.Mock(side_effect=fake_request_success_logradouro))
-    def test_validate_fulfill_module_logradouro_without_client(self):
-        field = CepField()
-        cep = field.clean('70.150-903')
-        self.assertEqual('Rua Doutor Raul Silva',
-                         cep.logradouro)
-
-    @mock.patch('requests.post',
-                mock.Mock(side_effect=fake_request_success_logradouro))
-    def test_validate_fulfill_module_logradouro_with_complemento(self):
-        field = CepField()
-        cep = field.clean('70.150-903')
-        self.assertEqual('de 2301/2302 ao fim',
-                         cep.complemento)
 
     def test_request_timeout(self):
         cep = CepField(timeout=0.0001)
@@ -224,3 +208,62 @@ class ParserTestCase(TestCase):
         parsed_data = parser.get_data()
         self.assertEqual(self.data['complemento'],
                          parsed_data['complemento'])
+
+    def test_parser_get_all_key(self):
+        response = fake_request_success_brasilia()
+        parser = Parser(response.content)
+        self.assertTrue(parser.get_labels())
+
+    def test_parser_get_all_content(self):
+        response = fake_request_success_brasilia()
+        parser = Parser(response.content)
+        self.assertTrue(parser.get_contents())
+
+
+class EngineTestCase(TestCase):
+
+    def test_instantiate_engine(self):
+        Engine()
+
+    def test_get_labels_without_data(self):
+        engine = Engine()
+        self.assertFalse(engine.get_labels())
+
+    def test_get_contents_without_data(self):
+        engine = Engine()
+        self.assertFalse(engine.get_contents())
+
+    def test_get_data_without_data(self):
+        engine = Engine()
+        self.assertFalse(engine.get_data())
+
+    def test_busca_dados_not_implemented_raise_error(self):
+        engine = Engine()
+        with self.assertRaises(NotImplementedError):
+            engine.busca_dados()
+
+    def test_configura_conteudo_not_implemented_raise_error(self):
+        engine = Engine()
+        with self.assertRaises(NotImplementedError):
+            engine.configura_conteudo()
+
+
+class ParserEngineTestCase(TestCase):
+
+    def setUp(self):
+        response = fake_request_success_logradouro()
+        self.content = response.content.decode('iso-8859-1')
+
+    def test_instantiate_parser_engine(self):
+        ParserEngine()
+
+    def test_configura_conteudo_with_success(self):
+        engine = ParserEngine()
+        engine.configura_conteudo(self.content)
+        self.assertIsNotNone(engine.conteudo)
+
+    def test_busca_dados_with_success(self):
+        engine = ParserEngine()
+        engine.configura_conteudo(self.content)
+        engine.busca_dados()
+        self.assertIsNotNone(engine.tabela_html)
