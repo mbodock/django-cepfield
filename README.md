@@ -12,8 +12,9 @@ Valida e preenche automaticamente endereço baseado em um numero de CEP.
 
 ### Requisitos
 
-* Django 1.7+
-* Requests 2.9+
+* Django 1.11 para python 2.7
+* Django 2.0+ para python 3.5+
+* Requests 2.20+
 
 
 ### Instalando
@@ -45,11 +46,11 @@ from cep.forms import CepField
 
 class MeuForm(forms.Form):
     cep = CepField()
-    # CepFIeld(force_correios_validation=False) will not raises a validation error if requests can't reach Correios.
-    # CepFIeld(timeout=3) requests will wait only 3 seconds before fails, default is 10.
-    # you can combine both
+    # CepField(force_correios_validation=False) não irá falhar ao tentar conectar-se aos correios
+    # CepField(timeout=3) O padrão é 10s.
+    # Você pode usar ambas ao mesmo tempo
 
-# sua view
+# Em sua view
 form = MeuForm(request.GET)
 if form.is_valid():  # Isso irá salvar o cep se o mesmo for válido
     cep = form.cleaned_data.get('cep')
