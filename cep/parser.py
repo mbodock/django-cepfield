@@ -30,6 +30,8 @@ class Engine(object):
 class ParserEngine(Engine):
     """Engine que o parser irá utilizar"""
 
+    MSG_CEP_NAO_ENCONTRADO = 'DADOS NAO ENCONTRADOS'
+
     def __init__(self):
         super(ParserEngine, self).__init__()
         self.tabela_html = None
@@ -42,10 +44,15 @@ class ParserEngine(Engine):
         self._separa_labels_conteudo()
 
     def _busca_tabela(self):
-        tabela = self.conteudo.find_class('tmptabela')
-        if len(tabela[0].getchildren()) > 2:
+        conteudo_base = self.conteudo.find_class('ctrlcontent')
+        try:
+            tabela_cep = conteudo_base[0].find_class('tmptabela')
+        except IndexError:
+            raise ValidationError('Não foi possível buscar o CEP informado')
+        if (not tabela_cep and
+            any(self.MSG_CEP_NAO_ENCONTRADO in element.text_content() for element in conteudo_base)):
             raise ValidationError('CEP não encontrado')
-        self.tabela_html = tabela[0]
+        self.tabela_html = tabela_cep[0]
 
     def _normaliza_dados(self, cabecalho, valor):
         cabecalho = cabecalho.replace(':', '')

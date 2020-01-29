@@ -48,6 +48,10 @@ def fake_request_fail(*args, **kwargs):
     with codecs.open('tests/responses/error.html', 'r', 'iso-8859-1') as f:
         return FakeRequest(f.read().encode('iso-8859-1'))
 
+def fake_request_fail_parser_quebrado(*args, **kwargs):
+    with codecs.open('tests/responses/error-quebrando-estrutura.html', 'r', 'iso-8859-1') as f:
+        return FakeRequest(f.read().encode('iso-8859-1'))
+
 
 def fake_request_error(*args, **kwargs):
     raise FakeException('Internet Down')
@@ -267,3 +271,10 @@ class ParserEngineTestCase(TestCase):
         engine.configura_conteudo(self.content)
         engine.busca_dados()
         self.assertIsNotNone(engine.tabela_html)
+
+    def test_busca_dados_with_parser_broken(self):
+        engine = ParserEngine()
+        engine.configura_conteudo(
+            fake_request_fail_parser_quebrado().content.decode('iso-8859-1'))
+        with self.assertRaises(ValidationError):
+            engine.busca_dados()
