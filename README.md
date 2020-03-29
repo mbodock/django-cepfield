@@ -12,7 +12,6 @@ Valida e preenche automaticamente endereço baseado em um numero de CEP.
 
 ### Requisitos
 
-* Django 1.11 para python 2.7
 * Django 2.0+ para python 3.5+
 * Requests 2.20+
 
