@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-__version__ = '0.3.1'
+__version__ = '0.4.0'
 __description__ = 'Django CepField'
 __long_description__ = 'Auto fill address using brasizilian CEP number.'
 
@@ -34,10 +34,10 @@ setup(
         'Operating System :: OS Independent',
         'Topic :: Software Development',
         'Environment :: Web Environment',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'License :: OSI Approved :: MIT License',
     ],
     tests_require=['pytest'],
