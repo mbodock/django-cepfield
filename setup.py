@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 __version__ = '0.3.1'
 __description__ = 'Django CepField'
-__long_description__ = 'Auto fill address using brasizilian CEP number.'
+__long_description__ = 'Auto fill addresses using Brazilian CEP number.'
 
 __author__ = 'Marcus Bodock'
 __author_email__ = 'mbodock@gmail.com'
