@@ -37,6 +37,11 @@ def fake_request_success_brasilia(*args, **kwargs):
         return FakeRequest(f.read().encode('iso-8859-1'))
 
 
+def fake_request_cep_desmembrado(*args, **kwargs):
+    with codecs.open('tests/responses/cep-desmembrado.html', 'r', 'iso-8859-1') as f:
+        return FakeRequest(f.read().encode('iso-8859-1'))
+
+
 def fake_request_success_logradouro(*args, **kwargs):
     with codecs.open('tests/responses/success-logradouro.html',
                      'r',
@@ -47,6 +52,7 @@ def fake_request_success_logradouro(*args, **kwargs):
 def fake_request_fail(*args, **kwargs):
     with codecs.open('tests/responses/error.html', 'r', 'iso-8859-1') as f:
         return FakeRequest(f.read().encode('iso-8859-1'))
+
 
 def fake_request_fail_parser_quebrado(*args, **kwargs):
     with codecs.open('tests/responses/error-quebrando-estrutura.html', 'r', 'iso-8859-1') as f:
@@ -220,6 +226,11 @@ class ParserTestCase(TestCase):
 
     def test_parser_get_all_content(self):
         response = fake_request_success_brasilia()
+        parser = Parser(response.content)
+        self.assertTrue(parser.get_contents())
+
+    def test_parser_with_cep_desmembrado(self):
+        response = fake_request_cep_desmembrado()
         parser = Parser(response.content)
         self.assertTrue(parser.get_contents())
 
