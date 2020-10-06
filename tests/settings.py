@@ -10,6 +10,7 @@ INSTALLED_APPS = (
     'cep',
 )
 
+
 # Removendo migrations
 class DisableMigrations(object):
     def __contains__(self, item):
@@ -17,5 +18,6 @@ class DisableMigrations(object):
 
     def __getitem__(self, item):
         return None
+
 
 MIGRATION_MODULES = DisableMigrations()

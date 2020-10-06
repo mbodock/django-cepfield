@@ -76,7 +76,7 @@ class ParserEngine(Engine):
 
     def _separa_labels_conteudo(self):
         cabecalhos, dados = tuple(
-            i.getchildren() for i in self.tabela_html.getchildren()
+            i.getchildren() for i in self.tabela_html.getchildren()[:2]
         )
         for cabecalho, valor in zip(cabecalhos, dados):
             dados_normalizados = self._normaliza_dados(
